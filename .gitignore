@@ -6,3 +6,10 @@ test-results/
 .DS_Store
 *.log
 .env*
+.codex/
+.idea/
+.vscode/
+*.pem
+*.key
+*.crx
+*.zip

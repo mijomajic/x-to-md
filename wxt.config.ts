@@ -1,7 +1,15 @@
+import { resolve } from 'node:path';
 import { defineConfig } from 'wxt';
 
 export default defineConfig({
   srcDir: 'src',
+  hooks: {
+    'build:publicAssets'(wxt, files) {
+      for (const file of ['LICENSE', 'THIRD_PARTY_NOTICES.md']) {
+        files.push({ absoluteSrc: resolve(wxt.config.root, file), relativeDest: file });
+      }
+    },
+  },
   manifest: {
     name: 'X to Markdown',
     description: 'Save X Articles as clean Markdown in one click.',
