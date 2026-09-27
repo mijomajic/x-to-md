@@ -1,0 +1,4 @@
+* text=auto eol=lf
+*.png binary
+# Markdown snapshots intentionally contain two-space hard line breaks.
+*.snap whitespace=-blank-at-eol

@@ -1,0 +1,49 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`article to Markdown > renders the complete article as stable clean Markdown 1`] = `
+"---
+title: "Building Software With Agents"
+author: "@fieldnotes"
+published: 2026-09-27
+source: https://x.com/fieldnotes/article/123456789
+---
+
+# Building Software With Agents
+
+![Cover image](https://pbs.twimg.com/media/cover.jpg)
+
+Start small. Keep the useful parts.
+
+## A smaller loop
+
+🚀 Build **bold** and *italic* tools.
+
+Read the [guide](https://example.com/guide).
+
+### Make it repeatable
+
+- Write a fixture.
+- Check the output.
+    - Keep emoji intact 👩🏽‍💻.
+
+1. Build.
+2. Review.
+
+> Small tools should stay small.  
+> Keep the reader in control.
+
+![A notebook](https://pbs.twimg.com/media/notebook.jpg)
+
+One step at a time.
+
+\`\`\`ts
+const answer = 42;
+\`\`\`
+
+![Image](https://pbs.twimg.com/media/preview.jpg)
+
+[Watch video](https://video.twimg.com/high.mp4)
+
+[Embedded post](https://x.com/i/status/123456789)
+"
+`;

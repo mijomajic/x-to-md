@@ -1,0 +1,53 @@
+{
+  "name": "x-to-md",
+  "version": "0.1.0",
+  "description": "Save X Articles as clean Markdown in one click.",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mijomajic/x-to-md.git"
+  },
+  "homepage": "https://github.com/mijomajic/x-to-md#readme",
+  "bugs": {
+    "url": "https://github.com/mijomajic/x-to-md/issues"
+  },
+  "keywords": [
+    "chrome-extension",
+    "markdown",
+    "twitter",
+    "x-articles",
+    "fxtwitter"
+  ],
+  "engines": {
+    "node": "^22.12.0 || >=24.0.0"
+  },
+  "scripts": {
+    "dev": "wxt",
+    "build": "wxt build",
+    "zip": "wxt zip && node scripts/verify-package.mjs --checksum",
+    "verify:package": "node scripts/verify-package.mjs",
+    "postinstall": "wxt prepare",
+    "typecheck": "tsc --noEmit",
+    "lint": "biome check .",
+    "format": "biome check --write .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:browser": "npm run build && node scripts/browser-smoke.mjs",
+    "check": "npm run typecheck && npm run lint && npm test && npm run build && npm run verify:package"
+  },
+  "dependencies": {
+    "turndown": "^7.2.1"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.5.14",
+    "@types/chrome": "^0.1.24",
+    "@types/node": "^24.0.0",
+    "@types/turndown": "^5.0.5",
+    "playwright": "^1.58.0",
+    "typescript": "^5.9.3",
+    "vitest": "^5.0.2",
+    "wxt": "^0.21.4"
+  }
+}

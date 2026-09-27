@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>X to Markdown</title>
+  </head>
+  <body>
+    <main id="app" aria-busy="true">
+      <header>
+        <img src="/icon/32.png" width="24" height="24" alt="" />
+        <span class="brand">X <span class="arrow">→</span> Markdown</span>
+      </header>
+      <section class="article" aria-label="Article">
+        <p id="eyebrow" class="eyebrow">X ARTICLE</p>
+        <h1 id="title">Getting your article…</h1>
+        <p id="author" class="author" hidden></p>
+      </section>
+      <div id="actions" class="actions">
+        <button id="download" class="primary" type="button" disabled>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 3v12m-4-4 4 4 4-4M5 16v4h14v-4" /></svg>
+          <span>Download .md</span>
+        </button>
+        <button id="copy" class="secondary" type="button" disabled>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V4H4v12h4"/></svg>
+          <span>Copy Markdown</span>
+        </button>
+      </div>
+      <footer>
+        <p id="status" role="status" aria-live="polite">Connecting to FxTwitter…</p>
+        <button id="retry" class="retry" type="button" hidden>Retry</button>
+      </footer>
+    </main>
+    <script type="module" src="./main.ts"></script>
+  </body>
+</html>

@@ -1,0 +1,122 @@
+{
+  "code": 200,
+  "message": "OK",
+  "tweet": {
+    "author": { "screen_name": "fieldnotes", "name": "Field Notes" },
+    "created_at": "2026-09-26T10:30:00Z",
+    "article": {
+      "title": "Building Software With Agents",
+      "created_at": "2026-09-27T08:00:00Z",
+      "cover_media": {
+        "media_info": { "original_img_url": "https://pbs.twimg.com/media/cover.jpg" }
+      },
+      "content": {
+        "blocks": [
+          { "type": "unstyled", "text": "Start small. Keep the useful parts." },
+          { "type": "header-two", "text": "A smaller loop" },
+          {
+            "type": "unstyled",
+            "text": "🚀 Build bold and italic tools.",
+            "inlineStyleRanges": [
+              { "offset": 9, "length": 4, "style": "Bold" },
+              { "offset": 18, "length": 6, "style": "Italic" }
+            ]
+          },
+          {
+            "type": "unstyled",
+            "text": "Read the guide.",
+            "entityRanges": [{ "offset": 9, "length": 5, "key": 0 }]
+          },
+          { "type": "header-three", "text": "Make it repeatable" },
+          { "type": "unordered-list-item", "text": "Write a fixture." },
+          { "type": "unordered-list-item", "text": "Check the output." },
+          { "type": "unordered-list-item", "depth": 1, "text": "Keep emoji intact 👩🏽‍💻." },
+          { "type": "ordered-list-item", "text": "Build." },
+          { "type": "ordered-list-item", "text": "Review." },
+          {
+            "type": "blockquote",
+            "text": "Small tools should stay small.\nKeep the reader in control."
+          },
+          {
+            "type": "atomic",
+            "text": " ",
+            "entityRanges": [{ "key": 1, "offset": 0, "length": 1 }]
+          },
+          {
+            "type": "atomic",
+            "text": " ",
+            "entityRanges": [{ "key": 2, "offset": 0, "length": 1 }]
+          },
+          {
+            "type": "atomic",
+            "text": " ",
+            "entityRanges": [{ "key": 3, "offset": 0, "length": 1 }]
+          },
+          {
+            "type": "atomic",
+            "text": " ",
+            "entityRanges": [{ "key": 4, "offset": 0, "length": 1 }]
+          }
+        ],
+        "entityMap": [
+          {
+            "key": "0",
+            "value": { "type": "LINK", "data": { "url": "https://example.com/guide" } }
+          },
+          {
+            "key": "1",
+            "value": {
+              "type": "MEDIA",
+              "data": { "mediaItems": [{ "mediaId": "image-1" }], "caption": "One step at a time." }
+            }
+          },
+          {
+            "key": "2",
+            "value": {
+              "type": "MARKDOWN",
+              "data": { "markdown": "```ts\nconst answer = 42;\n```" }
+            }
+          },
+          {
+            "key": "3",
+            "value": { "type": "MEDIA", "data": { "mediaItems": [{ "mediaId": "video-1" }] } }
+          },
+          { "key": "4", "value": { "type": "TWEET", "data": { "tweetId": "123456789" } } }
+        ]
+      },
+      "media_entities": [
+        {
+          "media_id": "image-1",
+          "alt_text": "A notebook",
+          "media_info": {
+            "__typename": "ApiImage",
+            "original_img_url": "https://pbs.twimg.com/media/notebook.jpg"
+          }
+        },
+        {
+          "media_id": "video-1",
+          "media_info": {
+            "__typename": "ApiVideo",
+            "preview_image": { "original_img_url": "https://pbs.twimg.com/media/preview.jpg" },
+            "variants": [
+              {
+                "bit_rate": 128000,
+                "content_type": "video/mp4",
+                "url": "https://video.twimg.com/low.mp4"
+              },
+              {
+                "bit_rate": 832000,
+                "content_type": "video/mp4",
+                "url": "https://video.twimg.com/high.mp4"
+              },
+              {
+                "content_type": "application/x-mpegURL",
+                "url": "https://video.twimg.com/playlist.m3u8"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}
