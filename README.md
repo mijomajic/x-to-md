@@ -45,6 +45,89 @@ If an `x.com/i/article/…` link or an older article fails, open the **author's 
 
 Extraction depends on the third-party FxTwitter API. Deleted, protected, restricted, or unavailable articles may not be accessible. Images remain remote URLs, so the Markdown file isn't an offline media archive. Videos and embedded posts are saved as links.
 
+## CLI for agents
+
+The CLI uses the same extraction and Markdown conversion as the extension. It needs
+Node.js 22.12+ (22.x) or 24+, an internet connection, and no browser or X login.
+From a clone of this repository:
+
+```bash
+npm install
+npm link
+x-to-md --help
+```
+
+Give an agent an X Article link and ask it to run:
+
+```bash
+x-to-md "https://x.com/author/status/123456789"
+```
+
+The full Markdown goes to stdout, so the agent can read it directly. To save files:
+
+```bash
+x-to-md "https://x.com/author/article/123456789" --output article.md
+x-to-md --input links.txt --out-dir articles/
+x-to-md "https://x.com/author/status/123" "https://x.com/author/status/456" --out-dir articles/
+```
+
+`links.txt` contains one URL per line; blank lines and lines starting with `#` are
+ignored. Batch requests run sequentially, skip duplicate source URLs, and continue
+after individual failures. Directory filenames include the title, URL kind, and
+source ID. Existing files are never replaced unless you add `--force`. An explicit
+`--output` requires its parent directory to exist; `--out-dir` creates directories.
+
+Diagnostics and saved file paths go to stderr. Exit codes are `0` for success, `1`
+for extraction or filesystem failures (including a partially successful batch),
+and `2` for invalid arguments. The same article availability limits apply to the CLI.
+
+Without installing a global command, use `npm run cli -- <url>` from this repository,
+or build once with `npm run build:cli` and run `node /absolute/path/to/x-to-md/dist/cli.mjs <url>`
+from any directory. After source changes, run `npm run build:cli` to update the linked CLI.
+See [agent instructions](docs/agents.md) for a reusable prompt.
+
+### Automatic agent skill
+
+Install the discoverable Codex skill after installing the CLI:
+
+```bash
+npm run install:skill
+```
+
+This installs `read-x-articles` in `$CODEX_HOME/skills` (or `~/.codex/skills`),
+with a fallback pointing to this checkout's executable. Open a new chat to make
+the skill available for discovery. You can also invoke it explicitly with
+`$read-x-articles`. The installer refuses to replace an existing skill; to update
+your installed copy, run `npm run install:skill -- --force`.
+
+### Structured output and content warnings
+
+```bash
+x-to-md --json "https://x.com/author/status/123456789"
+x-to-md --json --input links.txt
+x-to-md --json "https://x.com/author/status/123456789" --output article.json
+```
+
+`--json` emits one JSON object per line, so batches can be read directly without
+saving files. Each object has `schemaVersion: 1` and `ok`. Successful results
+contain `title`, `author`, `published`, `source`, `markdown`, `wordCount`, and
+`warnings`; unknown authors and dates are `null`. Failures contain `source`
+(or `null` for a command-level failure) and `error: { code, message, retryable }`.
+Network errors, timeouts, and rate limits are retryable. Exit codes stay the same.
+
+With `--output`, JSON is written to the specified file. With `--out-dir`, each
+result is saved as a `.json` file and also emitted on stdout; saved results include
+an absolute `savedPath`. Failures still emit JSON on stdout, including save failures.
+`--help` always prints human-readable help.
+
+Warnings have `code`, `message`, a zero-based `block` index, and optional `entity`
+and `url`. Codes distinguish `unsupported-embed`, `missing-entity`,
+`media-unavailable`, and `link-only`. Embedded posts and videos are preserved as
+links and reported as such; their contents are not fetched or transcribed.
+Unknown embeds retain available safe links and captions. Article dividers render
+as Markdown rules. Human-readable warnings go to stderr even without `--json`,
+and the extension shows the notice count with details on hover.
+
 ## Privacy
 
 - No account, tracking, analytics, or backend operated by this project.

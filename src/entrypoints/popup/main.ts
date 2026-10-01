@@ -1,6 +1,6 @@
 import { downloadMarkdown } from '../../lib/download';
 import { ArticleError, errorMessage } from '../../lib/errors';
-import { articleToMarkdown, wordCount } from '../../lib/markdown';
+import { articleToMarkdownWithWarnings, wordCount } from '../../lib/markdown';
 import { fetchArticle } from '../../lib/x';
 import './style.css';
 
@@ -28,6 +28,7 @@ function setStatus(message: string, tone = '') {
 
 async function load() {
   result = undefined;
+  status.title = '';
   app.setAttribute('aria-busy', 'true');
   retry.hidden = true;
   actions.hidden = false;
@@ -40,11 +41,15 @@ async function load() {
   try {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
     const article = await fetchArticle(tab?.url ?? '');
-    result = { title: article.title, markdown: articleToMarkdown(article) };
+    const { markdown, warnings } = articleToMarkdownWithWarnings(article);
+    result = { title: article.title, markdown };
     title.textContent = article.title;
     author.textContent = article.author ?? '';
     author.hidden = !article.author;
-    setStatus(`Ready · ${wordCount(article).toLocaleString()} words`);
+    setStatus(
+      `Ready · ${wordCount(article).toLocaleString()} words${warnings.length ? ` · ${warnings.length} content notices` : ''}`,
+    );
+    status.title = warnings.map((warning) => warning.message).join('\n');
     download.disabled = false;
     copy.disabled = false;
   } catch (error) {

@@ -4,6 +4,7 @@
     "includes": [
       "**",
       "!!node_modules",
+      "!!dist",
       "!!.wxt",
       "!!.output",
       "!!test-results",

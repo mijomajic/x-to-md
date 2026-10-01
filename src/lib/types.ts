@@ -42,3 +42,11 @@ export interface Article {
   entities: Map<string, Entity>;
   media: Map<string, Media>;
 }
+
+export interface ExtractionWarning {
+  code: 'unsupported-embed' | 'missing-entity' | 'media-unavailable' | 'link-only';
+  message: string;
+  block: number;
+  entity?: string;
+  url?: string;
+}

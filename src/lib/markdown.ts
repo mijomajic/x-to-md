@@ -5,7 +5,7 @@
  */
 import TurndownService from 'turndown';
 import { ArticleError } from './errors';
-import type { Article, Block, Entity } from './types';
+import type { Article, Block, Entity, ExtractionWarning } from './types';
 import { safeUrl } from './x';
 
 function html(text: string): string {
@@ -160,45 +160,100 @@ function codeFence(code: string, language = ''): string {
   return `${fence}${lang}\n${code.replace(/\n$/, '')}\n${fence}`;
 }
 
-function atomicMarkdown(block: Block, article: Article): string {
-  return [...new Set(block.entityRanges.map((r) => r.key))]
+function atomicMarkdown(
+  block: Block,
+  article: Article,
+  blockIndex: number,
+  warnings: ExtractionWarning[],
+): string {
+  const keys = [...new Set(block.entityRanges.map((r) => r.key))];
+  if (!keys.length) {
+    warnings.push({
+      code: 'missing-entity',
+      message: 'Embed has no entity reference.',
+      block: blockIndex,
+    });
+    return block.text.trim() ? label(block.text) : '[Unsupported embed]';
+  }
+  return keys
     .map((key) => {
+      const warn = (code: ExtractionWarning['code'], message: string, url?: string) => {
+        warnings.push({ code, message, block: blockIndex, entity: key, ...(url && { url }) });
+      };
       const entity = article.entities.get(key);
-      if (!entity) return '[Unsupported embed]';
+      if (!entity) {
+        warn('missing-entity', `Embed entity ${key} is unavailable.`);
+        return '[Unsupported embed]';
+      }
+      if (entity.type === 'DIVIDER') return '---';
       if (entity.type === 'MARKDOWN') {
         const match = entity.markdown.match(/^(`{3,})([^\n]*)\n([\s\S]*?)\n?\1\s*$/);
         return match ? codeFence(match[3] ?? '', match[2]?.trim()) : codeFence(entity.markdown);
       }
-      if (entity.type === 'TWEET' && /^\d+$/.test(entity.tweetId))
-        return `[Embedded post](https://x.com/i/status/${entity.tweetId})`;
+      if (entity.type === 'TWEET' && /^\d+$/.test(entity.tweetId)) {
+        const url = `https://x.com/i/status/${entity.tweetId}`;
+        warn('link-only', 'Embedded post is preserved as a link; its text was not fetched.', url);
+        return `[Embedded post](${url})`;
+      }
       if (entity.type === 'MEDIA') {
         const items = entity.mediaIds.map((id) => {
           const media = article.media.get(id);
-          if (!media) return '[Media unavailable]';
+          if (!media || (!media.image && !media.video)) {
+            warn('media-unavailable', `Media ${id} is unavailable.`);
+            return '[Media unavailable]';
+          }
           const image = media.image
             ? `![${label(media.alt || entity.caption || 'Image')}](${destination(media.image)})`
             : '';
-          if (media.video)
+          if (media.video) {
+            warn(
+              'link-only',
+              'Video is preserved as a link; its contents were not transcribed.',
+              media.video,
+            );
             return [image, `[Watch video](${destination(media.video)})`]
               .filter(Boolean)
               .join('\n\n');
+          }
           return image || '[Media unavailable]';
         });
+        if (!entity.mediaIds.length) {
+          warn('media-unavailable', 'Media embed has no media references.');
+          if (entity.url) items.push(`[Media link](${destination(entity.url)})`);
+          else items.push('[Media unavailable]');
+        }
         if (entity.caption) items.push(label(entity.caption));
         return items.join('\n\n') || '[Media unavailable]';
       }
+      if (entity.type === 'LINK' && entity.url)
+        return `[${label(entity.caption || 'Link')}](${destination(entity.url)})`;
+      warn(
+        'unsupported-embed',
+        `Unsupported embed type: ${entity.type || 'unknown'}.`,
+        entity.url || undefined,
+      );
       return entity.url
         ? `[${label(entity.caption || 'Embedded content')}](${destination(entity.url)})`
-        : '[Unsupported embed]';
+        : [entity.caption && label(entity.caption), '[Unsupported embed]']
+            .filter(Boolean)
+            .join('\n\n');
     })
     .join('\n\n');
 }
 
 export function articleToMarkdown(article: Article): string {
+  return articleToMarkdownWithWarnings(article).markdown;
+}
+
+export function articleToMarkdownWithWarnings(article: Article): {
+  markdown: string;
+  warnings: ExtractionWarning[];
+} {
+  const warnings: ExtractionWarning[] = [];
   const parts: string[] = [];
   let previousList = false;
   const listStack: { type: string; count: number }[] = [];
-  for (const block of article.blocks) {
+  for (const [blockIndex, block] of article.blocks.entries()) {
     const isList = block.type === 'unordered-list-item' || block.type === 'ordered-list-item';
     if (isList) {
       // Clamp impossible depth jumps while preserving valid nested lists.
@@ -223,7 +278,7 @@ export function articleToMarkdown(article: Article): string {
     listStack.length = 0;
     previousList = false;
     if (block.type === 'atomic') {
-      parts.push(atomicMarkdown(block, article));
+      parts.push(atomicMarkdown(block, article, blockIndex, warnings));
       continue;
     }
     if (block.type === 'code-block') {
@@ -256,7 +311,10 @@ export function articleToMarkdown(article: Article): string {
   if (article.published) metadata.push(`published: ${article.published}`);
   metadata.push(`source: ${article.source}`);
   const cover = article.cover ? `![Cover image](${destination(article.cover)})\n\n` : '';
-  return `---\n${metadata.join('\n')}\n---\n\n# ${label(article.title)}\n\n${cover}${body}\n`;
+  return {
+    markdown: `---\n${metadata.join('\n')}\n---\n\n# ${label(article.title)}\n\n${cover}${body}\n`,
+    warnings,
+  };
 }
 
 export function wordCount(article: Article): number {

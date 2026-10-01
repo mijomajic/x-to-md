@@ -1,0 +1,6 @@
+interface:
+  display_name: "Read X Articles"
+  short_description: "Read X Articles directly with the x-to-md CLI"
+  default_prompt: "Use $read-x-articles to read and summarize these X Article links."
+policy:
+  allow_implicit_invocation: true
