@@ -30,6 +30,9 @@ Keep the extracted folder in place while the extension is installed. The extensi
 
 To update, replace the contents of that folder with the new release and click **Reload** on the extension's card.
 
+To build from a clone instead, run `npm install && npm run build:extension` and load the
+resulting `extension/` folder. Rerun the command and click **Reload** after pulling changes.
+
 ## Use
 
 1. Open an X post, thread, or Article (or the post that shares an Article).

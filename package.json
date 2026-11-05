@@ -26,6 +26,7 @@
   "scripts": {
     "dev": "wxt",
     "build": "wxt build",
+    "build:extension": "wxt build && node -e \"const fs=require('node:fs');fs.rmSync('extension',{recursive:true,force:true});fs.cpSync('.output/chrome-mv3','extension',{recursive:true})\"",
     "zip": "wxt zip && node scripts/verify-package.mjs --checksum",
     "verify:package": "node scripts/verify-package.mjs",
     "postinstall": "wxt prepare",
