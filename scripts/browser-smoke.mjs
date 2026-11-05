@@ -47,7 +47,7 @@ try {
   await page.waitForFunction(
     () => document.querySelector('#app')?.getAttribute('aria-busy') === 'false',
   );
-  assert.match(await page.locator('#status').innerText(), /Open an X Article/);
+  assert.match(await page.locator('#status').innerText(), /Open an X post or Article/);
   assert.equal(await page.locator('#actions').isVisible(), false);
   assert.equal(await page.evaluate(() => chrome.runtime.getManifest().name), 'X to Markdown');
 

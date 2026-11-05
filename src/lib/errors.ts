@@ -16,8 +16,8 @@ export class ArticleError extends Error {
 export function errorMessage(error: unknown): string {
   const kind = error instanceof ArticleError ? error.kind : 'extraction';
   return {
-    'not-article': 'Open an X Article to use this extension.',
-    extraction: "Couldn't extract this article.",
+    'not-article': 'Open an X post or Article to use this extension.',
+    extraction: "Couldn't extract this post or article.",
     network: "Couldn't reach FxTwitter. Check your connection and try again.",
     timeout: 'FxTwitter took too long to respond. Try again.',
     'rate-limit': 'FxTwitter is busy. Please wait a moment and try again.',

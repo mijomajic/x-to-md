@@ -14,12 +14,12 @@ function html(text: string): string {
     (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c] ?? c,
   );
 }
-function destination(url: string): string {
+export function destination(url: string): string {
   return url.replace(/[()<>\s\\]/g, (c) =>
     encodeURIComponent(c).replace('(', '%28').replace(')', '%29'),
   );
 }
-function label(text: string): string {
+export function label(text: string): string {
   return text.replace(/\s+/g, ' ').replace(/[\\`*_[\]<>]/g, '\\$&');
 }
 

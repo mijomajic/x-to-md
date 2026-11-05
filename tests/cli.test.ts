@@ -78,7 +78,7 @@ describe('agent CLI', () => {
     expect(files.some((file) => file.endsWith('-status-123456789.md'))).toBe(true);
     expect(files.some((file) => file.endsWith('-status-1234567890.md'))).toBe(true);
     expect(output.stdout).not.toHaveBeenCalled();
-    expect(output.stderr.mock.calls.flat().join('')).toContain('Expected an X Article');
+    expect(output.stderr.mock.calls.flat().join('')).toContain('Expected an X post');
   });
 
   it('reports upstream rate limits without emitting article text', async () => {

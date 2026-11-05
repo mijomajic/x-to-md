@@ -1,0 +1,32 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`posts and threads > renders an author thread with polls, quotes, media and links 1`] = `
+"---
+title: "First post is *bold* about prices."
+type: thread
+author: "@fieldnotes"
+published: 2026-11-05
+source: https://x.com/fieldnotes/status/222
+posts: 2
+---
+
+# Thread by @fieldnotes (2 posts)
+
+First post is **\\*bold\\*** about prices.
+
+Second paragraph.
+
+- Yes — 75% (30 votes)
+- No — 25% (10 votes)
+
+*Poll · 40 votes · final results*
+
+---
+
+Second 🧵 post with [@friend](https://x.com/friend) and [#tags](https://x.com/hashtag/tags) [example.com/report](https://example.com/report)
+
+> **[@other\\_user](https://x.com/other_user/status/333)** · 2026-11-04
+>
+> Quoted &lt;words&gt; &amp; stuff
+"
+`;

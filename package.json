@@ -1,7 +1,7 @@
 {
   "name": "x-to-md",
   "version": "0.1.0",
-  "description": "Save X Articles as clean Markdown in one click.",
+  "description": "Save X Articles, posts, and threads as clean Markdown in one click.",
   "private": true,
   "type": "module",
   "license": "MIT",

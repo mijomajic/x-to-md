@@ -1,0 +1,99 @@
+{
+  "code": 200,
+  "status": {
+    "id": "222",
+    "text": "Second 🧵 post",
+    "raw_text": {
+      "text": "Second 🧵 post with @friend and #tags https://t.co/abc https://t.co/pic",
+      "display_text_range": [0, 53],
+      "facets": [
+        { "type": "mention", "indices": [19, 26], "original": "friend" },
+        { "type": "hashtag", "indices": [31, 36], "original": "tags" },
+        {
+          "type": "url",
+          "indices": [37, 53],
+          "original": "https://t.co/abc",
+          "replacement": "https://example.com/report",
+          "display": "example.com/report"
+        },
+        { "type": "media", "indices": [54, 70], "original": "https://t.co/pic" }
+      ]
+    },
+    "author": { "screen_name": "fieldnotes" },
+    "created_timestamp": 1793884272,
+    "replying_to": { "screen_name": "fieldnotes", "status": "111" },
+    "media": {
+      "all": [
+        {
+          "type": "photo",
+          "id": "1",
+          "url": "https://pbs.twimg.com/media/a.jpg",
+          "altText": "A chart"
+        },
+        {
+          "type": "video",
+          "id": "2",
+          "thumbnail_url": "https://pbs.twimg.com/media/b.jpg",
+          "url": "https://video.twimg.com/low.mp4",
+          "formats": [
+            { "url": "https://video.twimg.com/low.mp4", "container": "mp4", "bitrate": 100 },
+            { "url": "https://video.twimg.com/high.mp4", "container": "mp4", "bitrate": 900 },
+            { "url": "javascript:alert(1)", "container": "mp4", "bitrate": 9999 }
+          ]
+        }
+      ]
+    }
+  },
+  "thread": [
+    {
+      "id": "111",
+      "raw_text": {
+        "text": "First post is *bold* about prices.\n\nSecond paragraph.",
+        "display_text_range": [0, 53],
+        "facets": [{ "type": "bold", "indices": [14, 20] }]
+      },
+      "author": { "screen_name": "fieldnotes" },
+      "created_timestamp": 1793884200,
+      "poll": {
+        "choices": [
+          { "label": "Yes", "count": 30, "percentage": 75 },
+          { "label": "No", "count": 10, "percentage": 25 }
+        ],
+        "total_votes": 40,
+        "time_left_en": "Final results"
+      }
+    },
+    {
+      "id": "222",
+      "raw_text": {
+        "text": "Second 🧵 post with @friend and #tags https://t.co/abc https://t.co/pic",
+        "display_text_range": [0, 53],
+        "facets": [
+          { "type": "mention", "indices": [19, 26], "original": "friend" },
+          { "type": "hashtag", "indices": [31, 36], "original": "tags" },
+          {
+            "type": "url",
+            "indices": [37, 53],
+            "original": "https://t.co/abc",
+            "replacement": "https://example.com/report",
+            "display": "example.com/report"
+          },
+          { "type": "media", "indices": [54, 70], "original": "https://t.co/pic" }
+        ]
+      },
+      "author": { "screen_name": "fieldnotes" },
+      "replying_to": { "screen_name": "fieldnotes", "status": "111" },
+      "quote": {
+        "id": "333",
+        "raw_text": { "text": "Quoted <words> & stuff", "facets": [] },
+        "author": { "screen_name": "other_user" },
+        "created_timestamp": 1793800000
+      }
+    },
+    {
+      "id": "444",
+      "raw_text": { "text": "A reply from someone else", "facets": [] },
+      "author": { "screen_name": "stranger" }
+    }
+  ]
+}

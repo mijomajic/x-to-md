@@ -12,7 +12,7 @@ export default defineConfig({
   },
   manifest: {
     name: 'X to Markdown',
-    description: 'Save X Articles as clean Markdown in one click.',
+    description: 'Save X Articles, posts, and threads as clean Markdown in one click.',
     permissions: ['activeTab', 'downloads', 'clipboardWrite'],
     host_permissions: ['https://api.fxtwitter.com/*'],
     minimum_chrome_version: '109',

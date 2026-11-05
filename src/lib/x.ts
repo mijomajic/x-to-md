@@ -196,7 +196,7 @@ export function parseArticleResponse(input: unknown, url: ArticleUrl): Article {
   };
 }
 
-async function requestJson(
+export async function requestJson(
   path: string,
   fetcher: typeof fetch,
   signal: AbortSignal,

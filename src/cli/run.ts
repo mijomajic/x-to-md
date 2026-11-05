@@ -1,24 +1,26 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { ArticleError, errorMessage } from '../lib/errors';
+import { fetchDocument } from '../lib/extract';
 import { filenameFromTitle } from '../lib/filename';
-import { articleToMarkdownWithWarnings, wordCount } from '../lib/markdown';
-import { fetchArticle, parseArticleUrl } from '../lib/x';
+import { parseArticleUrl } from '../lib/x';
 
 const HELP = `Usage: x-to-md <url> [--output article.md]
        x-to-md <url> [<url> ...] --out-dir articles/
        x-to-md --input links.txt --out-dir articles/
 
-Read X Articles as Markdown. A single URL prints Markdown to stdout by default.
+Read X Articles, posts, and threads as Markdown. A single URL prints Markdown to
+stdout by default. Posts include the author's thread unless --no-thread is set.
 
-  --output, -o <file>  Save one article to a file
-  --out-dir <dir>     Save articles using title and source ID filenames
+  --output, -o <file>  Save one result to a file
+  --out-dir <dir>     Save results using title and source ID filenames
   --input <file>      Read URLs, one per line (blank lines and # comments ignored)
+  --no-thread        Export only the linked post, not the author's thread
   --force            Replace existing files
   --json             Emit a JSON result (one per line for batches)
   --help, -h         Show this help
 
-Diagnostics and saved paths go to stderr. Exit codes: 0 success, 1 article/file
+Diagnostics and saved paths go to stderr. Exit codes: 0 success, 1 extraction/file
 failure (batch continues), 2 invalid arguments. Extraction uses FxTwitter.
 `;
 
@@ -29,14 +31,16 @@ interface Options {
   input?: string;
   force: boolean;
   json: boolean;
+  thread: boolean;
 }
 
 function parseArgs(args: string[]): Options {
-  const options: Options = { urls: [], force: false, json: false };
+  const options: Options = { urls: [], force: false, json: false, thread: true };
   for (let i = 0; i < args.length; i++) {
     const arg = args[i] ?? '';
     if (arg === '--force') options.force = true;
     else if (arg === '--json') options.json = true;
+    else if (arg === '--no-thread') options.thread = false;
     else if (['--output', '-o', '--out-dir', '--input'].includes(arg)) {
       const value = args[++i];
       if (!value || value.startsWith('-')) throw new Error(`${arg} requires a value.`);
@@ -58,8 +62,7 @@ interface IO {
 
 function diagnostic(error: unknown): string {
   if (error instanceof ArticleError) {
-    if (error.kind === 'not-article')
-      return 'Expected an X Article or a post containing an Article.';
+    if (error.kind === 'not-article') return 'Expected an X post, thread, or Article URL.';
     return errorMessage(error);
   }
   if (error instanceof Error && 'code' in error && error.code === 'EEXIST')
@@ -119,7 +122,7 @@ export async function runCli(args: string[], io: IO): Promise<number> {
     return fail(new Error('Supply a URL; multiple URLs require --out-dir or --json.'), 2);
   }
   if (options.output && options.urls.length > 1) {
-    return fail(new Error('--output supports a single article; use --out-dir for batches.'), 2);
+    return fail(new Error('--output supports a single URL; use --out-dir for batches.'), 2);
   }
   if (options.force && !options.output && !options.directory) {
     return fail(new Error('--force requires --output or --out-dir.'), 2);
@@ -135,21 +138,23 @@ export async function runCli(args: string[], io: IO): Promise<number> {
   // Sequential requests avoid flooding the shared upstream API.
   for (const url of options.urls) {
     try {
-      const article = await fetchArticle(url, io.fetcher);
-      const { markdown, warnings } = articleToMarkdownWithWarnings(article);
+      const doc = await fetchDocument(url, { fetcher: io.fetcher, thread: options.thread });
+      const { markdown, warnings } = doc;
       const result = {
         schemaVersion: 1,
         ok: true,
-        title: article.title,
-        author: article.author ?? null,
-        published: article.published ?? null,
-        source: article.source,
+        kind: doc.kind,
+        title: doc.title,
+        author: doc.author ?? null,
+        published: doc.published ?? null,
+        source: doc.source,
         markdown,
-        wordCount: wordCount(article),
+        wordCount: doc.wordCount,
+        ...(doc.posts !== undefined && { posts: doc.posts }),
         warnings,
       };
       const parsed = parseArticleUrl(url);
-      const filename = filenameFromTitle(article.title).replace(
+      const filename = filenameFromTitle(doc.title).replace(
         /\.md$/,
         `-${parsed?.kind}-${parsed?.id}.${options.json ? 'json' : 'md'}`,
       );

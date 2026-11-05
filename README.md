@@ -1,16 +1,17 @@
 # X to Markdown
 
-Save X Articles as clean Markdown in one click.
+Save X Articles, posts, and threads as clean Markdown in one click.
 
 [Download the extension](https://github.com/mijomajic/x-to-md/releases/latest) · [Report a bug](https://github.com/mijomajic/x-to-md/issues)
 
 <img src="docs/popup.png" alt="X to Markdown showing an article title, Download .md and Copy Markdown buttons" width="336" />
 
-Open an X Article, click the extension, and **download a `.md` file** or **copy the Markdown**. Free and open source. No account or setup beyond installing the extension.
+Open an X Article, post, or thread, click the extension, and **download a `.md` file** or **copy the Markdown**. Free and open source. No account or setup beyond installing the extension.
 
 ## Features
 
 - Article title, author, publication date, and source URL.
+- Ordinary posts and the author's full thread, with photos, videos, polls, quoted posts, mentions, hashtags, and expanded links.
 - Headings, bold, italics, links, lists, quotes, and code blocks.
 - Cover images, inline images, captions, and links to embedded videos and posts.
 - Emoji support and clean filenames based on the article title.
@@ -31,19 +32,19 @@ To update, replace the contents of that folder with the new release and click **
 
 ## Use
 
-1. Open an X Article or the author's post that contains it.
+1. Open an X post, thread, or Article (or the post that shares an Article).
 2. Click **X to Markdown** in your browser toolbar.
 3. Choose **Download .md** or **Copy Markdown**.
 
 Files go to your browser's usual download location. You can paste the Markdown into Obsidian, a text editor, or any app that accepts Markdown.
 
-## Supported articles
+## Supported links
 
-Works with `x.com/<username>/article/<id>` and `x.com/<username>/status/<id>` links when the post contains an Article, including equivalent `twitter.com` links. Ordinary posts and threads aren't supported.
+Works with `x.com/<username>/article/<id>` and `x.com/<username>/status/<id>` links, including equivalent `twitter.com` links. A status link that shares an Article exports the Article. Any other status link exports the post; if the author continued it as a thread, the whole author thread is exported in order (replies from other accounts are left out). Posts are titled from their first line.
 
 If an `x.com/i/article/…` link or an older article fails, open the **author's post that shared the article** and try again. For connection errors, use **Retry** in the popup.
 
-Extraction depends on the third-party FxTwitter API. Deleted, protected, restricted, or unavailable articles may not be accessible. Images remain remote URLs, so the Markdown file isn't an offline media archive. Videos and embedded posts are saved as links.
+Extraction depends on the third-party FxTwitter API. Deleted, protected, restricted, or unavailable posts and articles may not be accessible. Images remain remote URLs, so the Markdown file isn't an offline media archive. Videos and embedded posts are saved as links.
 
 ## CLI for agents
 
@@ -57,7 +58,7 @@ npm link
 x-to-md --help
 ```
 
-Give an agent an X Article link and ask it to run:
+Give an agent an X post, thread, or Article link and ask it to run:
 
 ```bash
 x-to-md "https://x.com/author/status/123456789"
@@ -67,6 +68,7 @@ The full Markdown goes to stdout, so the agent can read it directly. To save fil
 
 ```bash
 x-to-md "https://x.com/author/article/123456789" --output article.md
+x-to-md "https://x.com/author/status/123456789" --no-thread   # just this post
 x-to-md --input links.txt --out-dir articles/
 x-to-md "https://x.com/author/status/123" "https://x.com/author/status/456" --out-dir articles/
 ```
@@ -88,14 +90,16 @@ See [agent instructions](docs/agents.md) for a reusable prompt.
 
 ### Automatic agent skill
 
-Install the discoverable Codex skill after installing the CLI:
+Install the discoverable agent skill after installing the CLI:
 
 ```bash
 npm run install:skill
 ```
 
-This installs `read-x-articles` in `$CODEX_HOME/skills` (or `~/.codex/skills`),
-with a fallback pointing to this checkout's executable. Open a new chat to make
+This installs `read-x-articles` into every agent home that exists: Codex
+(`$CODEX_HOME/skills`, or `~/.codex/skills`) and Claude Code (`~/.claude/skills`),
+with a fallback pointing to this checkout's executable. Pick one with
+`npm run install:skill -- --codex` or `-- --claude`. Open a new chat to make
 the skill available for discovery. You can also invoke it explicitly with
 `$read-x-articles`. The installer refuses to replace an existing skill; to update
 your installed copy, run `npm run install:skill -- --force`.
@@ -110,8 +114,9 @@ x-to-md --json "https://x.com/author/status/123456789" --output article.json
 
 `--json` emits one JSON object per line, so batches can be read directly without
 saving files. Each object has `schemaVersion: 1` and `ok`. Successful results
-contain `title`, `author`, `published`, `source`, `markdown`, `wordCount`, and
-`warnings`; unknown authors and dates are `null`. Failures contain `source`
+contain `kind` (`article`, `post`, or `thread`), `title`, `author`, `published`,
+`source`, `markdown`, `wordCount`, and `warnings`, plus `posts` (the post count)
+for posts and threads; unknown authors and dates are `null`. Failures contain `source`
 (or `null` for a command-level failure) and `error: { code, message, retryable }`.
 Network errors, timeouts, and rate limits are retryable. Exit codes stay the same.
 

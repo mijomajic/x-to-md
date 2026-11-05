@@ -139,7 +139,7 @@ describe('FxTwitter requests', () => {
       .mockRejectedValue(new TypeError('Private raw diagnostic'));
     await expect(fetchArticle(source, fetcher)).rejects.toThrow('network');
     expect(errorMessage(new Error('Private raw diagnostic'))).toBe(
-      "Couldn't extract this article.",
+      "Couldn't extract this post or article.",
     );
   });
   it('handles invalid JSON', async () => {
